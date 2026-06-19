@@ -39,8 +39,8 @@
   .secttl::before{content:"";width:4px;height:15px;background:var(--maroon);border-radius:2px}
   .secttl .sub{color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none;font-size:12px}
 
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px}
-  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 17px;position:relative;overflow:hidden}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 17px 14px;position:relative;overflow:hidden;display:flex;flex-direction:column}
   .kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--maroon)}
   .kpi .lbl{font-size:12px;color:var(--muted);font-weight:600}
   .kpi .val{font-size:25px;font-weight:800;margin-top:5px;color:var(--ink);letter-spacing:-.5px}
@@ -48,6 +48,13 @@
   .kpi .sub{font-size:11.5px;color:var(--muted);margin-top:3px}
   .kpi.accent::after{background:var(--gold)}
   .kpi.good .val{color:var(--good)} .kpi.bad .val{color:var(--bad)} .kpi.warn .val{color:var(--warn)}
+
+  .ai-btn{margin-top:11px;width:100%;border:1px solid var(--line);background:#fbf7f6;color:var(--maroon);
+    font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 8px;border-radius:7px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:5px;transition:.15s}
+  .ai-btn:hover{background:var(--maroon);color:#fff;border-color:var(--maroon)}
+  .ai-btn .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .ai-btn:hover .dot{background:#fff}
 
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
   .grid3{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:6px}
@@ -79,6 +86,39 @@
   footer{text-align:center;color:var(--muted);font-size:12px;margin-top:34px}
   svg .axis{stroke:var(--line);stroke-width:1}
   svg .glabel{fill:var(--muted);font-size:10px}
+
+  /* ---- AI insight modal ---- */
+  .modal-bg{position:fixed;inset:0;background:rgba(40,25,25,.55);backdrop-filter:blur(2px);
+    display:none;align-items:flex-start;justify-content:center;z-index:50;padding:40px 16px;overflow-y:auto}
+  .modal-bg.show{display:flex;animation:fade .2s}
+  .modal{background:var(--card);width:100%;max-width:640px;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.3);
+    overflow:hidden;animation:pop .22s}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-hd{background:linear-gradient(120deg,var(--maroon-d),var(--maroon));color:#fff;padding:18px 22px;
+    display:flex;align-items:center;gap:13px;position:relative}
+  .ai-ico{font-size:26px;flex:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}
+  .modal-ttl{font-size:17px;font-weight:700}
+  .modal-sub{font-size:12px;opacity:.85;margin-top:2px}
+  .sev-badge{margin-left:auto;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap;flex:none}
+  .sev-good{background:#e7f3ec;color:#1c5b35} .sev-warn{background:#fbf0e1;color:#9a5a14}
+  .sev-bad{background:#fbe4e3;color:#8f211d} .sev-info{background:#efe7e6;color:#6c4a48}
+  .modal-x{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.2);border:none;color:#fff;
+    width:30px;height:30px;border-radius:50%;font-size:19px;cursor:pointer;line-height:1}
+  .modal-x:hover{background:rgba(255,255,255,.35)}
+  .modal-body{padding:20px 22px 8px}
+  .ins-metric{display:flex;align-items:baseline;gap:10px;background:var(--bg);border-radius:10px;padding:11px 14px;margin-bottom:16px}
+  .ins-metric .mv{font-size:22px;font-weight:800;color:var(--maroon)}
+  .ins-metric .ml{font-size:12px;color:var(--muted)}
+  .ins-sec{margin-bottom:17px}
+  .ins-sec h4{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .ins-sec h4 .ic{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+  .ic.a{background:#fbe4e3} .ic.b{background:#fbf0e1} .ic.c{background:#e7f3ec}
+  .ins-sec ul{list-style:none;padding-left:32px}
+  .ins-sec li{font-size:13px;color:var(--ink);margin:6px 0;position:relative;line-height:1.55}
+  .ins-sec li::before{content:"";position:absolute;left:-14px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--maroon-l)}
+  .ins-sec.act li::before{background:var(--good)}
+  .ins-sec b{color:var(--maroon)}
+  .modal-ft{padding:12px 22px 18px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -113,7 +153,7 @@
 
   <!-- 財務報表 -->
   <section class="tab active" id="fin">
-    <div class="secttl">財務概況 <span class="sub">營收 / 應收 / 應付（本幣，新台幣）</span></div>
+    <div class="secttl">財務概況 <span class="sub">營收 / 應收 / 應付（本幣，新台幣）｜點 KPI 上的「AI 洞見」看分析</span></div>
     <div class="kpis" id="finKpi"></div>
     <div class="grid2">
       <div class="card"><h3>月銷貨收入趨勢 <span class="note">本幣未稅</span></h3><div id="finRevChart"></div></div>
@@ -161,6 +201,20 @@
   <footer>弘誠興業股份有限公司 · H&amp;C Electric Co., Ltd. ｜ 本頁為本地離線儀表板，資料取自 DEMO-ERP Excel</footer>
 </div>
 
+<!-- AI insight modal -->
+<div class="modal-bg" id="insightModal" onclick="if(event.target===this)closeInsight()">
+  <div class="modal">
+    <div class="modal-hd">
+      <span class="ai-ico">🤖</span>
+      <div><div class="modal-ttl" id="miTtl"></div><div class="modal-sub">AI 經營洞見 · 以企業主視角分析</div></div>
+      <span class="sev-badge" id="miSev"></span>
+      <button class="modal-x" onclick="closeInsight()">×</button>
+    </div>
+    <div class="modal-body" id="miBody"></div>
+    <div class="modal-ft">※ 本洞見由系統依本儀表板數據自動推導，數據為 DEMO-ERP 範例值，僅供經營決策參考。</div>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script>
 const D = ERP_DATA;
@@ -172,6 +226,9 @@ function big(n){ n=n||0;
   return nf(n);
 }
 const el = (id)=>document.getElementById(id);
+const pct = (a,b)=> b ? a/b*100 : 0;
+const fp = v => (v>=0?'+':'') + v.toFixed(1) + '%';
+const fp0 = v => v.toFixed(1) + '%';
 
 // meta
 el('coZh').textContent = D.meta.company_zh;
@@ -187,10 +244,183 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   b.classList.add('active'); el(b.dataset.tab).classList.add('active');
 });
 
+/* ============ derived analytics ============ */
+const F=D.finance, I=D.inventory, S=D.sales;
+const RV = F.monthly_rev, nM = RV.length;
+const lm = RV[nM-1]||{m:'',amt:0}, pm = RV[nM-2]||{m:'',amt:0};
+const mom = pm.amt ? pct(lm.amt-pm.amt, pm.amt) : 0;
+const ym = nM>=13 ? RV[nM-13] : null;
+const yoy = (ym&&ym.amt) ? pct(lm.amt-ym.amt, ym.amt) : null;
+const avg3 = RV.slice(-3).reduce((s,x)=>s+x.amt,0)/Math.min(3,nM);
+const c1 = S.top_cust[0]||{k:'',amt:0}, c1s = pct(c1.amt, S.total_rev);
+const c5s = pct(S.top_cust.slice(0,5).reduce((s,x)=>s+x.amt,0), S.total_rev);
+const r1 = S.by_sales[0]||{k:'',amt:0}, r1s = pct(r1.amt, S.total_rev);
+const repN = S.by_sales.length;
+const ct1 = I.cat[0]||{k:'',value:0}, ct1s = pct(ct1.value, I.inv_value);
+const avgMrev = F.revenue/nM;
+const monthsInv = avgMrev ? I.inv_value/avgMrev : 0;
+const apOutPct = pct(F.ap_outstanding, F.revenue);
+const apPayPct = F.ap_total ? pct(F.ap_paid, F.ap_total) : 0;
+const apAvg = F.ap_doc_count ? F.ap_total/F.ap_doc_count : 0;
+const avgDaily = S.daily.length ? S.total_rev/S.daily.length : 0;
+const todayVsAvg = avgDaily ? pct(S.latest_summary.amt-avgDaily, avgDaily) : 0;
+const instockPct = pct(I.sku_instock, I.sku_total);
+const backlogVsSales = pct(S.order_amt, S.total_rev);
+
+/* ============ AI insight content ============ */
+const INSIGHTS = {
+ fin_rev:{ ttl:'本期營業收入', mv:big(F.revenue), ml:'累計營收（本幣未稅）',
+   sev: mom>=0?'good':'warn',
+   a:[`最新月（<b>${lm.m}</b>）營收 <b>${big(lm.amt)}</b>，較上月 <b>${fp(mom)}</b>${yoy!==null?`、年增 <b>${fp(yoy)}</b>`:''}；近三月平均 ${big(avg3)}。`,
+      `營收高度集中：前一大客戶「<b>${c1.k}</b>」即占 <b>${fp0(c1s)}</b>，前五大客戶合計 <b>${fp0(c5s)}</b>，少數客戶決定整體成長動能。`],
+   s:[`需求端集中於少數大客戶與少數熱銷品（如 ${S.top_prod[0]?S.top_prod[0].k:'-'}），其採購節奏一變動，月營收即明顯起伏。`,
+      `月別營收呈淡旺季波動，部分月份回落多為大客戶拉貨週期，而非整體市場萎縮。`],
+   c:[`設定「單一客戶營收占比上限」（建議 < 25%），主動開發中段新客戶分散風險。`,
+      `與前五大客戶簽<b>年度框架訂單／滾動預測</b>，把不可控的零星拉貨轉為可預期營收。`,
+      `用在手訂單（backlog <b>${big(S.order_amt)}</b>）檢視未來能見度，淡季前提前備單衝刺。`] },
+
+ fin_tax:{ ttl:'銷項稅額', mv:big(F.output_tax), ml:'本期銷項稅額',
+   sev:'info',
+   a:[`銷項稅額 <b>${big(F.output_tax)}</b>，約為營收的 <b>${fp0(pct(F.output_tax,F.revenue))}</b>，與 5% 營業稅率下的應稅銷貨規模相符。`],
+   s:[`此為應稅內銷產生的稅額；若外銷／零稅率比重提高，占比會下降。比率異常通常代表發票漏開或課稅別設定錯誤。`],
+   c:[`每期與<b>進項稅額（採購）勾稽</b>，掌握應納／留抵稅額對現金流的影響。`,
+      `確保銷貨如期開立發票並準時申報，避免漏開與罰鍰。`,
+      `外銷客戶備齊零稅率證明文件，合法降低稅負。`] },
+
+ fin_ar:{ ttl:'應收帳款餘額', mv:big(F.ar_outstanding), ml:'帳上未收餘額',
+   sev:'warn',
+   a:[`帳上應收餘額僅 <b>${money(F.ar_outstanding)}</b>，相對營收 ${big(F.revenue)} 明顯偏低。`,
+      `這代表 DEMO 中「結帳單」資料筆數少，<b>應收資料不完整</b>，目前無法反映真實的應收周轉天數（DSO）。`],
+   s:[`多數銷貨可能尚未轉入結帳／收款流程，或屬現銷已收，導致帳面應收被低估。`],
+   c:[`補齊<b>結帳→收款</b>流程資料後，再計算 DSO 與帳齡。`,
+      `建立 <b>30/60/90 天帳齡分析</b>，自動標記逾期客戶。`,
+      `對信用額度高的客戶設定收款里程碑與對帳節點，降低呆帳風險。`] },
+
+ fin_ap:{ ttl:'應付帳款餘額', mv:big(F.ap_outstanding), ml:'尚未付款餘額',
+   sev: apOutPct>10?'bad':'warn',
+   a:[`應付餘額 <b>${money(F.ap_outstanding)}</b>，約占營收 <b>${fp0(apOutPct)}</b>，目前付款進度 <b>${fp0(apPayPct)}</b>。`,
+      `這是短期內必須動用的現金，是現金流管理的重點。`],
+   s:[`來自 <b>${F.ap_doc_count}</b> 筆應付憑單；若付款集中到期、又與收款節奏錯開，容易出現資金缺口。`],
+   c:[`製作未來 <b>4–8 週付款排程</b>，與預計收款對齊，避免單週現金透支。`,
+      `與主要供應商協商<b>延長帳期或分期</b>，改善營運週轉。`,
+      `評估<b>早付折扣</b>：若折扣年化報酬高於資金成本則優先付。`] },
+
+ fin_apcnt:{ ttl:'應付憑單數', mv:nf(F.ap_doc_count)+' 筆', ml:'本期應付憑單筆數',
+   sev:'info',
+   a:[`共 <b>${F.ap_doc_count}</b> 筆應付憑單，平均單筆 <b>${money(apAvg)}</b>。筆數多代表採購頻繁或供應商分散。`],
+   s:[`大量小額憑單會墊高對帳與行政成本，也可能反映供應商過多、議價力分散。`],
+   c:[`做供應商<b>集中度分析</b>，整併小額供應商以提升議價力。`,
+      `導入<b>應付自動對帳</b>與小額合併請款，降低人工成本。`,
+      `針對重複採購品設定常態供應商與年度合約價。`] },
+
+ inv_val:{ ttl:'庫存總值', mv:big(I.inv_value), ml:'庫存帳面總金額',
+   sev: monthsInv>2.5?'warn':'good',
+   a:[`庫存總值 <b>${money(I.inv_value)}</b>，約相當於 <b>${monthsInv.toFixed(1)} 個月</b>的營收規模（粗估，實際應以銷貨成本計算週轉）。`,
+      `庫存金額高度集中於<b>分類 ${ct1.k}</b>，占全部庫存金額 <b>${fp0(ct1s)}</b>，大部分資金壓在少數品類。`],
+   s:[`集中於少數高單價／高用量品類；若其需求預測失準，呆滯與跌價損失風險最大。`],
+   c:[`對「分類 ${ct1.k}」做 <b>ABC + 週轉分析</b>，找出長期未動用的呆滯庫存優先處理。`,
+      `設定<b>庫存週轉目標</b>，連動採購批量與安全存量，避免一次大量進貨。`,
+      `對呆滯品啟動出清／退貨／打消，把現金從倉庫釋放出來。`] },
+
+ inv_sku:{ ttl:'總品項數', mv:nf(I.sku_total)+' 項', ml:'品號主檔總數',
+   sev:'info',
+   a:[`共 <b>${I.sku_total}</b> 項品號，產品線廣，但也代表管理與備貨複雜度高。`],
+   s:[`常見「長尾品號」：占品項數多、卻只貢獻少量營收，仍占用主檔維護與倉儲空間。`],
+   c:[`做品號 <b>80/20（帕累托）分析</b>，淘汰或合併低貢獻長尾品號。`,
+      `新品上架時即設定<b>汰換／停用機制</b>，控制品號膨脹。`,
+      `將相似規格標準化，降低料號數量。`] },
+
+ inv_instock:{ ttl:'有庫存品項', mv:nf(I.sku_instock)+' 項', ml:'目前持有庫存的品號',
+   sev:'info',
+   a:[`<b>${I.sku_instock}</b> 項有庫存，占全部品項 <b>${fp0(instockPct)}</b>，幾乎全品項皆持有實體庫存。`],
+   s:[`接近 100% 備貨，通常代表備貨政策偏保守，採「全面備庫」而非按需求備貨。`],
+   c:[`區分 <b>備貨型(MTS)</b> 與 <b>接單型(MTO)</b>，非常備品改為接單後再採購／生產。`,
+      `以<b>需求預測</b>驅動備貨品項，降低全面備庫造成的資金占用。`] },
+
+ inv_zero:{ ttl:'零庫存品項', mv:nf(I.sku_zero)+' 項', ml:'目前無庫存的品號',
+   sev: I.sku_zero>0?'warn':'good',
+   a:[`目前有 <b>${I.sku_zero}</b> 項零庫存。零庫存不一定是壞事，關鍵在於它是「該淘汰」還是「熱銷缺貨」。`],
+   s:[`可能為停產／新品未進貨（正常），也可能是熱銷品缺貨（會直接損失訂單）。`],
+   c:[`逐項辨識零庫存原因：<b>熱銷缺貨</b>立即補貨並設安全存量；<b>停產品</b>則封存停用。`,
+      `對曾有銷售紀錄的零庫存品建立<b>缺貨預警</b>。`] },
+
+ inv_low:{ ttl:'低於安全存量', mv:nf(I.low_count)+' 項', ml:'低於安全存量的品號/庫別',
+   sev:'warn',
+   a:[`目前 <b>${I.low_count}</b> 項低於安全存量，數字看似良好；但真正的隱憂是<b>多數品號根本沒設安全存量</b>（資料中安全存量多為 0）。`,
+      `安全存量未設定，缺料警示形同虛設 —— 缺貨時系統不會提醒。`],
+   s:[`安全存量、補貨點未維護，補貨完全依賴人工經驗，旺季或前置期拉長時容易突發缺料。`],
+   c:[`先為 <b>A 類／熱銷品</b>設定合理安全存量與補貨點。`,
+      `安全存量連動<b>前置天數與需求波動</b>動態調整，而非固定值。`,
+      `建立缺料預警看板，讓警示真正發揮作用。`] },
+
+ sal_today:{ ttl:'當日銷貨額', mv:big(S.latest_summary.amt), ml:'報表日銷貨金額',
+   sev: todayVsAvg>=0?'good':'warn',
+   a:[`報表日（${S.latest_day}）銷貨 <b>${money(S.latest_summary.amt)}</b>，較日均 ${big(avgDaily)} <b>${fp(todayVsAvg)}</b>。`,
+      `單日數字易受少數大單影響，當日共 ${S.latest_summary.docs} 筆，前幾筆即占大宗。`],
+   s:[`B2B 工業型銷售出貨呈批次性，單日高低多為大單到貨時點，而非真實趨勢轉折。`],
+   c:[`以<b>7 日移動平均</b>判斷趨勢，不被單日數字誤導。`,
+      `大單入帳當日同步檢視<b>備貨與收款</b>，確保交得出、收得到。`,
+      `建立每日目標與達成率看板，讓業務即時校準。`] },
+
+ sal_todaycnt:{ ttl:'當日銷貨單數', mv:nf(S.latest_summary.docs)+' 筆', ml:'報表日銷貨單筆數',
+   sev:'info',
+   a:[`當日 <b>${S.latest_summary.docs}</b> 筆銷貨單。單數 × 平均單價 = 當日營收，兩者要一起看。`],
+   s:[`單數少而金額大 → 依賴大單、風險集中；單數多而金額小 → 偏零售、處理成本高。`],
+   c:[`追蹤「<b>件單價</b>」趨勢，判斷是量增還是價增。`,
+      `用交叉銷售／搭配銷售提升<b>每單金額</b>。`,
+      `對業務做每日活動量（拜訪、報價、成交）管理。`] },
+
+ sal_cumrev:{ ttl:'本期累計營收', mv:big(S.total_rev), ml:'累計銷貨金額',
+   sev: c5s>60?'warn':'good',
+   a:[`累計營收 <b>${money(S.total_rev)}</b>，共 ${S.doc_count} 張銷貨單，平均單金額 ${big(S.avg_doc)}。`,
+      `集中度偏高：前五大客戶占 <b>${fp0(c5s)}</b>、業務員「${r1.k}」一人占 <b>${fp0(r1s)}</b>（共 ${repN} 位業務）。`],
+   s:[`營收同時押在少數客戶與少數業務員身上，任一方異動（客戶轉單、業務離職）衝擊都大。`],
+   c:[`降低對單一業務員依賴：強制 <b>CRM 建檔</b>、客戶關係制度化交接。`,
+      `擴大中段客戶貢獻，設定營收結構（前五大占比）改善目標。`,
+      `設計業務獎酬鼓勵開發新客，而非只守大客戶。`] },
+
+ sal_order:{ ttl:'本期訂單金額', mv:big(S.order_amt), ml:'累計訂單金額',
+   sev:'info',
+   a:[`累計訂單 <b>${money(S.order_amt)}</b>（${S.order_count} 筆），相當於已銷貨的 <b>${fp0(backlogVsSales)}</b>，是未來營收的能見度（backlog）。`],
+   s:[`訂單能否如期變成營收，取決於交期、產能與備料；訂單變更／取消率也會侵蝕能見度。`],
+   c:[`監控<b>訂單達交率與逾期未交</b>，提前處理交期風險。`,
+      `以訂單 backlog 驅動<b>排產與備料</b>，避免臨時缺料。`,
+      `分析訂單<b>取消／變更率</b>，找出預測或溝通落差。`] },
+
+ sal_avg:{ ttl:'平均每單金額', mv:big(S.avg_doc), ml:'每張銷貨單平均金額',
+   sev:'info',
+   a:[`平均每單 <b>${money(S.avg_doc)}</b>。此數字易被大客戶大單拉高，需分客群檢視。`],
+   s:[`中小客戶單值偏低時，小額訂單的揀貨、開單、運送成本會吃掉毛利。`],
+   c:[`分客群看單值，對低單值客戶設<b>最低訂購量／金額</b>。`,
+      `推動<b>套裝／量販／搭售</b>提升單值。`,
+      `用自動化降低小額訂單的處理成本，或集中出貨。`] },
+};
+
+/* ============ modal ============ */
+function openInsight(key){
+  const it = INSIGHTS[key]; if(!it) return;
+  el('miTtl').textContent = it.ttl;
+  const sevMap={good:['體質良好','sev-good'],warn:['需留意','sev-warn'],bad:['高度關注','sev-bad'],info:['營運觀察','sev-info']};
+  const sv=sevMap[it.sev]||sevMap.info;
+  const badge=el('miSev'); badge.textContent=sv[0]; badge.className='sev-badge '+sv[1];
+  const li=arr=>arr.map(x=>`<li>${x}</li>`).join('');
+  el('miBody').innerHTML =
+    `<div class="ins-metric"><span class="mv">${it.mv}</span><span class="ml">${it.ml}</span></div>
+     <div class="ins-sec"><h4><span class="ic a">🔎</span>問題分析</h4><ul>${li(it.a)}</ul></div>
+     <div class="ins-sec"><h4><span class="ic b">🧭</span>問題來源</h4><ul>${li(it.s)}</ul></div>
+     <div class="ins-sec act"><h4><span class="ic c">✅</span>建議對策</h4><ul>${li(it.c)}</ul></div>`;
+  el('insightModal').classList.add('show');
+}
+function closeInsight(){ el('insightModal').classList.remove('show'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeInsight(); });
+
+/* ============ render KPIs ============ */
 function kpi(o){
+  const btn = (o.key && INSIGHTS[o.key])
+    ? `<button class="ai-btn" onclick="openInsight('${o.key}')"><span class="dot"></span>AI 洞見</button>` : '';
   return `<div class="kpi ${o.cls||''}"><div class="lbl">${o.lbl}</div>
     <div class="val">${o.val}<span class="unit">${o.unit||''}</span></div>
-    ${o.sub?`<div class="sub">${o.sub}</div>`:''}</div>`;
+    ${o.sub?`<div class="sub">${o.sub}</div>`:''}${btn}</div>`;
 }
 function hbars(rows, fmt){
   const max = Math.max(1,...rows.map(r=>r.v));
@@ -198,12 +428,11 @@ function hbars(rows, fmt){
     <div class="bar-track"><div class="bar-fill" style="width:${(r.v/max*100).toFixed(1)}%"></div></div>
     <div class="vv">${fmt(r.v)}</div></div>`).join('');
 }
-// simple SVG column chart
 function colChart(data, fmt){
   const W=520,H=210,pl=8,pr=8,pt=14,pb=26;
   const n=data.length, iw=W-pl-pr, ih=H-pt-pb;
   const max=Math.max(1,...data.map(d=>d.v));
-  const bw=iw/n*0.66, gap=iw/n;
+  const gap=iw/n, bw=gap*0.66;
   let bars='', labels='';
   data.forEach((d,i)=>{
     const h=d.v/max*ih, x=pl+gap*i+(gap-bw)/2, y=pt+ih-h;
@@ -217,27 +446,25 @@ function colChart(data, fmt){
     <line class="axis" x1="${pl}" y1="${pt+ih}" x2="${W-pr}" y2="${pt+ih}"/>${bars}${labels}</svg>`;
 }
 
-/* ---------- FINANCE ---------- */
-const F=D.finance;
+/* FINANCE */
 el('finKpi').innerHTML =
-  kpi({lbl:'本期營業收入',val:big(F.revenue),unit:'',sub:money(F.revenue),cls:'accent'})+
-  kpi({lbl:'銷項稅額',val:big(F.output_tax),sub:money(F.output_tax)})+
-  kpi({lbl:'應收帳款餘額',val:big(F.ar_outstanding),sub:money(F.ar_outstanding),cls:'good'})+
-  kpi({lbl:'應付帳款餘額',val:big(F.ap_outstanding),sub:money(F.ap_outstanding),cls:'bad'})+
-  kpi({lbl:'應付憑單數',val:nf(F.ap_doc_count),unit:'筆'});
+  kpi({lbl:'本期營業收入',val:big(F.revenue),sub:money(F.revenue),cls:'accent',key:'fin_rev'})+
+  kpi({lbl:'銷項稅額',val:big(F.output_tax),sub:money(F.output_tax),key:'fin_tax'})+
+  kpi({lbl:'應收帳款餘額',val:big(F.ar_outstanding),sub:money(F.ar_outstanding),cls:'good',key:'fin_ar'})+
+  kpi({lbl:'應付帳款餘額',val:big(F.ap_outstanding),sub:money(F.ap_outstanding),cls:'bad',key:'fin_ap'})+
+  kpi({lbl:'應付憑單數',val:nf(F.ap_doc_count),unit:'筆',key:'fin_apcnt'});
 el('finRevChart').innerHTML = colChart(F.monthly_rev.map(m=>({n:m.m.slice(2),v:m.amt})), big);
 el('finApChart').innerHTML  = colChart(F.ap_monthly.map(m=>({n:m.m.slice(2),v:m.amt})), big);
 el('finNote').innerHTML = '※ 營收與銷項稅額取自銷貨單（EQPTG）本幣金額；應付帳款取自應付憑單（CEPTA，'+F.ap_doc_count+' 筆）。'+
   '應收帳款以結帳單（CERTA）入帳，DEMO 資料中結帳筆數較少，故餘額偏低，僅供結構示意。';
 
-/* ---------- INVENTORY ---------- */
-const I=D.inventory;
+/* INVENTORY */
 el('invKpi').innerHTML =
-  kpi({lbl:'庫存總值',val:big(I.inv_value),sub:money(I.inv_value),cls:'accent'})+
-  kpi({lbl:'總品項數',val:nf(I.sku_total),unit:'項'})+
-  kpi({lbl:'有庫存品項',val:nf(I.sku_instock),unit:'項',cls:'good'})+
-  kpi({lbl:'零庫存品項',val:nf(I.sku_zero),unit:'項',cls:'warn'})+
-  kpi({lbl:'低於安全存量',val:nf(I.low_count),unit:'項',cls:I.low_count?'bad':'good'});
+  kpi({lbl:'庫存總值',val:big(I.inv_value),sub:money(I.inv_value),cls:'accent',key:'inv_val'})+
+  kpi({lbl:'總品項數',val:nf(I.sku_total),unit:'項',key:'inv_sku'})+
+  kpi({lbl:'有庫存品項',val:nf(I.sku_instock),unit:'項',cls:'good',key:'inv_instock'})+
+  kpi({lbl:'零庫存品項',val:nf(I.sku_zero),unit:'項',cls:'warn',key:'inv_zero'})+
+  kpi({lbl:'低於安全存量',val:nf(I.low_count),unit:'項',cls:I.low_count?'bad':'good',key:'inv_low'});
 el('invTop').innerHTML = I.top_items.map(it=>
   `<tr><td>${it.code}</td><td title="${it.name}">${(it.name||'').slice(0,14)||'-'}</td>
    <td class="num">${nf(it.qty)} ${it.unit||''}</td><td class="num">${money(it.val)}</td></tr>`).join('');
@@ -248,15 +475,14 @@ el('invLow').innerHTML = I.low_items.length
      <td><span class="tag lo">補貨</span></td></tr>`).join('')
   : '<tr><td colspan="6"><div class="empty">✓ 目前所有品號庫存量皆達安全存量，無需補貨警示。</div></td></tr>';
 
-/* ---------- SALES DAILY ---------- */
-const S=D.sales;
+/* SALES */
 el('salDay').textContent = '報表日：'+S.latest_day+'（資料最新銷貨日）';
 el('salKpi').innerHTML =
-  kpi({lbl:'當日銷貨額',val:big(S.latest_summary.amt),sub:money(S.latest_summary.amt),cls:'accent'})+
-  kpi({lbl:'當日銷貨單數',val:nf(S.latest_summary.docs),unit:'筆'})+
-  kpi({lbl:'本期累計營收',val:big(S.total_rev),sub:money(S.total_rev)})+
-  kpi({lbl:'本期訂單金額',val:big(S.order_amt),sub:S.order_count+' 筆訂單'})+
-  kpi({lbl:'平均每單金額',val:big(S.avg_doc),sub:money(S.avg_doc)});
+  kpi({lbl:'當日銷貨額',val:big(S.latest_summary.amt),sub:money(S.latest_summary.amt),cls:'accent',key:'sal_today'})+
+  kpi({lbl:'當日銷貨單數',val:nf(S.latest_summary.docs),unit:'筆',key:'sal_todaycnt'})+
+  kpi({lbl:'本期累計營收',val:big(S.total_rev),sub:money(S.total_rev),key:'sal_cumrev'})+
+  kpi({lbl:'本期訂單金額',val:big(S.order_amt),sub:S.order_count+' 筆訂單',key:'sal_order'})+
+  kpi({lbl:'平均每單金額',val:big(S.avg_doc),sub:money(S.avg_doc),key:'sal_avg'});
 const tail = S.daily.slice(-30);
 el('salTrend').innerHTML = colChart(tail.map(d=>({n:d.d.slice(5),v:d.amt})), big);
 el('salRep').innerHTML = hbars(S.by_sales.slice(0,8).map(r=>({n:'業務員 '+r.k+'（'+r.docs+'單）',v:r.amt})), big);
