@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弘誠興業 ERP 營運儀表板</title>
+<style>
+  :root{
+    --maroon:#7a0e0e; --maroon-d:#5c0a0a; --maroon-l:#a83232;
+    --bg:#f4f1ef; --card:#ffffff; --ink:#2b2222; --muted:#8a7f7b;
+    --line:#e7dedb; --good:#2e7d4f; --warn:#c6781e; --bad:#b5302b;
+    --gold:#c9a24b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI","Microsoft JhengHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 60px}
+
+  header{background:linear-gradient(120deg,var(--maroon-d),var(--maroon));color:#fff;padding:22px 0 18px;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+  .hd{max-width:1180px;margin:0 auto;padding:0 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{width:54px;height:40px;flex:none}
+  .logo svg{width:100%;height:100%}
+  .htitle h1{font-size:21px;font-weight:700;letter-spacing:.5px}
+  .htitle .en{font-size:12.5px;opacity:.82;letter-spacing:1px}
+  .hmeta{margin-left:auto;text-align:right;font-size:12px;opacity:.9}
+  .hmeta b{font-size:13px}
+
+  nav{display:flex;gap:6px;margin:18px 0 22px;border-bottom:2px solid var(--line)}
+  nav button{background:none;border:none;font-family:inherit;font-size:15px;font-weight:600;color:var(--muted);
+    padding:11px 20px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.15s}
+  nav button:hover{color:var(--maroon)}
+  nav button.active{color:var(--maroon);border-bottom-color:var(--maroon)}
+
+  .tab{display:none;animation:fade .25s}
+  .tab.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .secttl{font-size:13px;font-weight:700;color:var(--maroon);text-transform:uppercase;letter-spacing:1px;
+    margin:26px 0 12px;display:flex;align-items:center;gap:9px}
+  .secttl::before{content:"";width:4px;height:15px;background:var(--maroon);border-radius:2px}
+  .secttl .sub{color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none;font-size:12px}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 17px;position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--maroon)}
+  .kpi .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .kpi .val{font-size:25px;font-weight:800;margin-top:5px;color:var(--ink);letter-spacing:-.5px}
+  .kpi .unit{font-size:13px;font-weight:600;color:var(--muted);margin-left:3px}
+  .kpi .sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .kpi.accent::after{background:var(--gold)}
+  .kpi.good .val{color:var(--good)} .kpi.bad .val{color:var(--bad)} .kpi.warn .val{color:var(--warn)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+  .grid3{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:6px}
+  @media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h3{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline}
+  .card h3 .note{font-size:11.5px;color:var(--muted);font-weight:500}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:hover{background:#faf6f4}
+  .rank{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;
+    background:var(--bg);color:var(--maroon);font-size:11px;font-weight:700}
+  tr:nth-child(1) .rank{background:var(--maroon);color:#fff}
+
+  .bar-row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
+  .bar-row .nm{width:120px;flex:none;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar-track{flex:1;background:var(--bg);border-radius:6px;height:20px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--maroon),var(--maroon-l));border-radius:6px}
+  .bar-row .vv{width:96px;flex:none;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+  .tag.ok{background:#e7f3ec;color:var(--good)} .tag.lo{background:#fbeceb;color:var(--bad)}
+  .empty{padding:26px;text-align:center;color:var(--muted);font-size:13px}
+  .note-box{font-size:12px;color:var(--muted);background:#fbf8f7;border:1px dashed var(--line);border-radius:9px;padding:10px 13px;margin-top:12px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:34px}
+  svg .axis{stroke:var(--line);stroke-width:1}
+  svg .glabel{fill:var(--muted);font-size:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <div class="logo">
+      <svg viewBox="0 0 100 74" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="37" rx="47" ry="33" fill="none" stroke="#fff" stroke-width="5"/>
+        <path d="M18 30 Q50 14 82 30" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <path d="M18 44 Q50 60 82 44" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <rect x="38" y="33" width="24" height="8" rx="2" fill="none" stroke="#fff" stroke-width="4"/>
+      </svg>
+    </div>
+    <div class="htitle">
+      <h1 id="coZh">弘誠興業股份有限公司</h1>
+      <div class="en" id="coEn">H&amp;C Electric Co., Ltd. — ERP 營運儀表板</div>
+    </div>
+    <div class="hmeta">
+      <div>資料來源：<b id="mSrc">DEMO-ERP</b></div>
+      <div>資料期間：<span id="mRange"></span></div>
+      <div>產生日期：<span id="mGen"></span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav>
+    <button class="active" data-tab="fin">財務報表</button>
+    <button data-tab="inv">庫存狀況</button>
+    <button data-tab="sal">業務日報</button>
+  </nav>
+
+  <!-- 財務報表 -->
+  <section class="tab active" id="fin">
+    <div class="secttl">財務概況 <span class="sub">營收 / 應收 / 應付（本幣，新台幣）</span></div>
+    <div class="kpis" id="finKpi"></div>
+    <div class="grid2">
+      <div class="card"><h3>月銷貨收入趨勢 <span class="note">本幣未稅</span></h3><div id="finRevChart"></div></div>
+      <div class="card"><h3>月應付憑單金額 <span class="note">本幣</span></h3><div id="finApChart"></div></div>
+    </div>
+    <div class="note-box" id="finNote"></div>
+  </section>
+
+  <!-- 庫存狀況 -->
+  <section class="tab" id="inv">
+    <div class="secttl">庫存狀況 <span class="sub">品號主檔 KPVMB / 品號庫別 KPVMC</span></div>
+    <div class="kpis" id="invKpi"></div>
+    <div class="grid3">
+      <div class="card"><h3>前十二大庫存品項 <span class="note">依庫存金額</span></h3>
+        <table><thead><tr><th>品號</th><th>品名</th><th class="num">庫存量</th><th class="num">庫存金額</th></tr></thead><tbody id="invTop"></tbody></table>
+      </div>
+      <div class="card"><h3>庫存金額分布 <span class="note">依品號分類一</span></h3><div id="invCat"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>安全存量警示 <span class="note">庫存量低於安全存量之品號/庫別</span></h3>
+      <table><thead><tr><th>品號</th><th>庫別</th><th class="num">庫存量</th><th class="num">安全存量</th><th class="num">缺口</th><th>狀態</th></tr></thead><tbody id="invLow"></tbody></table>
+    </div>
+  </section>
+
+  <!-- 業務日報 -->
+  <section class="tab" id="sal">
+    <div class="secttl">業務日報 <span class="sub" id="salDay"></span></div>
+    <div class="kpis" id="salKpi"></div>
+    <div class="grid2">
+      <div class="card"><h3>近 30 個銷貨日趨勢 <span class="note">每日銷貨額</span></h3><div id="salTrend"></div></div>
+      <div class="card"><h3>業務員業績 <span class="note">本期累計</span></h3><div id="salRep"></div></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card"><h3>前十大客戶 <span class="note">本期累計銷貨</span></h3>
+        <table><thead><tr><th></th><th>客戶</th><th class="num">銷貨額</th><th class="num">單數</th></tr></thead><tbody id="salCust"></tbody></table>
+      </div>
+      <div class="card"><h3>熱銷品項 TOP 10 <span class="note">依銷貨金額</span></h3>
+        <table><thead><tr><th></th><th>品號 / 品名</th><th class="num">數量</th><th class="num">金額</th></tr></thead><tbody id="salProd"></tbody></table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>當日銷貨明細 <span class="note" id="salDocNote"></span></h3>
+      <table><thead><tr><th>單號</th><th>客戶</th><th>業務員</th><th class="num">金額</th></tr></thead><tbody id="salDocs"></tbody></table>
+    </div>
+  </section>
+
+  <footer>弘誠興業股份有限公司 · H&amp;C Electric Co., Ltd. ｜ 本頁為本地離線儀表板，資料取自 DEMO-ERP Excel</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = ERP_DATA;
+const nf = n => (n||0).toLocaleString('en-US');
+const money = n => 'NT$ ' + nf(Math.round(n||0));
+function big(n){ n=n||0;
+  if(Math.abs(n)>=1e8) return (n/1e8).toFixed(2)+' 億';
+  if(Math.abs(n)>=1e4) return (n/1e4).toFixed(0)+' 萬';
+  return nf(n);
+}
+const el = (id)=>document.getElementById(id);
+
+// meta
+el('coZh').textContent = D.meta.company_zh;
+el('coEn').innerHTML = D.meta.company_en + ' — ERP 營運儀表板';
+el('mSrc').textContent = D.meta.source;
+el('mRange').textContent = D.meta.date_range;
+el('mGen').textContent = D.meta.generated;
+
+// tabs
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); el(b.dataset.tab).classList.add('active');
+});
+
+function kpi(o){
+  return `<div class="kpi ${o.cls||''}"><div class="lbl">${o.lbl}</div>
+    <div class="val">${o.val}<span class="unit">${o.unit||''}</span></div>
+    ${o.sub?`<div class="sub">${o.sub}</div>`:''}</div>`;
+}
+function hbars(rows, fmt){
+  const max = Math.max(1,...rows.map(r=>r.v));
+  return rows.map(r=>`<div class="bar-row"><div class="nm" title="${r.n}">${r.n}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(r.v/max*100).toFixed(1)}%"></div></div>
+    <div class="vv">${fmt(r.v)}</div></div>`).join('');
+}
+// simple SVG column chart
+function colChart(data, fmt){
+  const W=520,H=210,pl=8,pr=8,pt=14,pb=26;
+  const n=data.length, iw=W-pl-pr, ih=H-pt-pb;
+  const max=Math.max(1,...data.map(d=>d.v));
+  const bw=iw/n*0.66, gap=iw/n;
+  let bars='', labels='';
+  data.forEach((d,i)=>{
+    const h=d.v/max*ih, x=pl+gap*i+(gap-bw)/2, y=pt+ih-h;
+    bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="2" fill="url(#mg)"><title>${d.n}: ${fmt(d.v)}</title></rect>`;
+    if(n<=12 || i%Math.ceil(n/12)===0)
+      labels+=`<text class="glabel" x="${(x+bw/2).toFixed(1)}" y="${H-9}" text-anchor="middle">${d.n}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a83232"/><stop offset="1" stop-color="#7a0e0e"/></linearGradient></defs>
+    <line class="axis" x1="${pl}" y1="${pt+ih}" x2="${W-pr}" y2="${pt+ih}"/>${bars}${labels}</svg>`;
+}
+
+/* ---------- FINANCE ---------- */
+const F=D.finance;
+el('finKpi').innerHTML =
+  kpi({lbl:'本期營業收入',val:big(F.revenue),unit:'',sub:money(F.revenue),cls:'accent'})+
+  kpi({lbl:'銷項稅額',val:big(F.output_tax),sub:money(F.output_tax)})+
+  kpi({lbl:'應收帳款餘額',val:big(F.ar_outstanding),sub:money(F.ar_outstanding),cls:'good'})+
+  kpi({lbl:'應付帳款餘額',val:big(F.ap_outstanding),sub:money(F.ap_outstanding),cls:'bad'})+
+  kpi({lbl:'應付憑單數',val:nf(F.ap_doc_count),unit:'筆'});
+el('finRevChart').innerHTML = colChart(F.monthly_rev.map(m=>({n:m.m.slice(2),v:m.amt})), big);
+el('finApChart').innerHTML  = colChart(F.ap_monthly.map(m=>({n:m.m.slice(2),v:m.amt})), big);
+el('finNote').innerHTML = '※ 營收與銷項稅額取自銷貨單（EQPTG）本幣金額；應付帳款取自應付憑單（CEPTA，'+F.ap_doc_count+' 筆）。'+
+  '應收帳款以結帳單（CERTA）入帳，DEMO 資料中結帳筆數較少，故餘額偏低，僅供結構示意。';
+
+/* ---------- INVENTORY ---------- */
+const I=D.inventory;
+el('invKpi').innerHTML =
+  kpi({lbl:'庫存總值',val:big(I.inv_value),sub:money(I.inv_value),cls:'accent'})+
+  kpi({lbl:'總品項數',val:nf(I.sku_total),unit:'項'})+
+  kpi({lbl:'有庫存品項',val:nf(I.sku_instock),unit:'項',cls:'good'})+
+  kpi({lbl:'零庫存品項',val:nf(I.sku_zero),unit:'項',cls:'warn'})+
+  kpi({lbl:'低於安全存量',val:nf(I.low_count),unit:'項',cls:I.low_count?'bad':'good'});
+el('invTop').innerHTML = I.top_items.map(it=>
+  `<tr><td>${it.code}</td><td title="${it.name}">${(it.name||'').slice(0,14)||'-'}</td>
+   <td class="num">${nf(it.qty)} ${it.unit||''}</td><td class="num">${money(it.val)}</td></tr>`).join('');
+el('invCat').innerHTML = hbars(I.cat.map(c=>({n:'分類 '+c.k+'（'+c.count+'項）',v:c.value})), big);
+el('invLow').innerHTML = I.low_items.length
+  ? I.low_items.map(it=>`<tr><td>${it.code}</td><td>${it.wh}</td><td class="num">${nf(it.qty)}</td>
+     <td class="num">${nf(it.safe)}</td><td class="num" style="color:var(--bad)">${nf(it.gap)}</td>
+     <td><span class="tag lo">補貨</span></td></tr>`).join('')
+  : '<tr><td colspan="6"><div class="empty">✓ 目前所有品號庫存量皆達安全存量，無需補貨警示。</div></td></tr>';
+
+/* ---------- SALES DAILY ---------- */
+const S=D.sales;
+el('salDay').textContent = '報表日：'+S.latest_day+'（資料最新銷貨日）';
+el('salKpi').innerHTML =
+  kpi({lbl:'當日銷貨額',val:big(S.latest_summary.amt),sub:money(S.latest_summary.amt),cls:'accent'})+
+  kpi({lbl:'當日銷貨單數',val:nf(S.latest_summary.docs),unit:'筆'})+
+  kpi({lbl:'本期累計營收',val:big(S.total_rev),sub:money(S.total_rev)})+
+  kpi({lbl:'本期訂單金額',val:big(S.order_amt),sub:S.order_count+' 筆訂單'})+
+  kpi({lbl:'平均每單金額',val:big(S.avg_doc),sub:money(S.avg_doc)});
+const tail = S.daily.slice(-30);
+el('salTrend').innerHTML = colChart(tail.map(d=>({n:d.d.slice(5),v:d.amt})), big);
+el('salRep').innerHTML = hbars(S.by_sales.slice(0,8).map(r=>({n:'業務員 '+r.k+'（'+r.docs+'單）',v:r.amt})), big);
+el('salCust').innerHTML = S.top_cust.map(c=>
+  `<tr><td><span class="rank"></span></td><td>${c.k}</td><td class="num">${money(c.amt)}</td><td class="num">${c.docs}</td></tr>`).join('');
+el('salProd').innerHTML = S.top_prod.map(p=>
+  `<tr><td><span class="rank"></span></td><td title="${p.name}">${p.k}<br><span style="color:var(--muted);font-size:11px">${(p.name||'').slice(0,16)}</span></td>
+   <td class="num">${nf(p.qty)}</td><td class="num">${money(p.amt)}</td></tr>`).join('');
+el('salDocNote').textContent = S.latest_day+'｜共 '+S.latest_summary.docs+' 筆';
+el('salDocs').innerHTML = S.latest_docs.length
+  ? S.latest_docs.map(d=>`<tr><td>${d.doc}</td><td>${d.cust}</td><td>${d.sales}</td><td class="num">${money(d.amt)}</td></tr>`).join('')
+  : '<tr><td colspan="4"><div class="empty">當日無銷貨明細</div></td></tr>';
+</script>
+</body>
+</html>
